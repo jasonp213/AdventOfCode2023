@@ -1,4 +1,4 @@
-from .solution import compute_cube_conundrum
+from .part1 import compute_cube_conundrum
 
 
 def test_cube_conundrum():
