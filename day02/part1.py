@@ -24,6 +24,18 @@ class Bag:
                 return False
         return True
 
+    def power(self) -> int:
+        return self.red * self.blue * self.green
+
+    def subset_fewest(self, record: str):
+        info, subsets = record.split(":")
+        for subset in subsets.split(";"):
+            for cube_desc in subset.split(","):
+                num, color = cube_desc.strip().split()
+                num = int(num)
+                if num > getattr(self, color):
+                    setattr(self, color, num)
+
 
 def compute_cube_conundrum(games_record: str) -> int:
     result = 0
