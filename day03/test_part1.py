@@ -1,6 +1,6 @@
 import textwrap
 
-from day03.part1 import sum_adjacent
+from day03.part1 import Schematic
 
 
 def test_sum_of_adjacent():
@@ -15,5 +15,6 @@ def test_sum_of_adjacent():
         ......755.
         ...$.*....
         .664.598.."""
-    puzzle = textwrap.dedent(_puzzle)
-    assert sum_adjacent(puzzle) == 4361
+    puzzle = textwrap.dedent(_puzzle).strip()
+    result = Schematic(puzzle).sum_part_number()
+    assert result == 4361

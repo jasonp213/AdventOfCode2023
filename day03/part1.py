@@ -1,47 +1,33 @@
 import os
 import re
-from collections import namedtuple
-
-CloseInterval = namedtuple("CloseInterval", "left right")
-CloseInterval.__contains__ = lambda self, _key: self.left <= _key <= self.right
 
 
-def sum_adjacent(puzzle: str) -> int:
-    pre_symbol = []  # the pre row symbol place like '...*......' -> [3]
-    pre_number_map = {}  # pre row number adjacent range except added  '467..114..' -> {(-1, 3): 467, (4, 8): 114}
-    result = 0
-    for idx, line in enumerate(puzzle.splitlines()):
-        cur_symbol = []
-        for symbol in re.finditer(r"[^a-zA-Z0-9/.]", line):
-            cur_symbol.append(symbol.span()[0])
+class Schematic:
+    def __init__(self, puzzle: str):
+        self._context = puzzle.splitlines()
+        self.row_num = len(self._context)
+        self.col_num = len(self._context[0])
 
-        cur_number_map = {}
-        for number in re.finditer(r"\d+", line):
-            ext_interval = CloseInterval(number.span()[0] - 1, number.span()[1])
-            cur_number_map[ext_interval] = int(number.group())
+    def sum_part_number(self):
+        result = 0
+        for idx, row in enumerate(self._context):
+            for match in re.finditer(r"\d+", row):
+                if self.is_part_number(idx, match.span()):
+                    result += int(match.group())
+        return result
 
-        adjacent_sum = pop_sum_of_interval_map(
-            cur_number_map, list(set(pre_symbol + cur_symbol))
-        ) + pop_sum_of_interval_map(pre_number_map, cur_symbol)
-        result += adjacent_sum
-
-        pre_number_map = cur_number_map
-        pre_symbol = cur_symbol
-        print(f"{idx}: '{line}', ret: {result}, adj: {adjacent_sum}")
-
-    return result
-
-
-def pop_sum_of_interval_map(number_map: dict[CloseInterval, int], symbol_place: list[int]) -> int:
-    result = 0
-    for symbol_place in symbol_place:
-        for interval in list(number_map.keys()):
-            if symbol_place in interval:
-                result += number_map[interval]
-    return result
+    def is_part_number(self, idx, span) -> bool:
+        top = idx - 1 if idx - 1 > 0 else 0
+        bottom = idx + 2 if idx + 2 < self.row_num else self.row_num
+        adjacent = ""
+        for i in range(top, bottom):
+            left = span[0] - 1 if span[0] - 1 > 0 else 0
+            right = span[1] + 1 if span[1] + 1 < self.col_num else self.col_num
+            adjacent += self._context[i][left:right]
+        return bool(re.search(r"[^0-9/.]", adjacent))
 
 
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.realpath(__file__))
     with open(f"{current_dir}/puzzle_part1.txt") as input_file:
-        print(sum_adjacent(input_file.read()))
+        print(Schematic(input_file.read()).sum_part_number())
