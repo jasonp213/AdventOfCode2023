@@ -12,7 +12,7 @@ def sum_adjacent(puzzle: str) -> int:
     result = 0
     for idx, line in enumerate(puzzle.splitlines()):
         cur_symbol = []
-        for symbol in re.finditer(r"[^a-zA-Z0-9/.]", line):
+        for symbol in re.finditer(r"[^a-zA-Z0-9\.]", line):
             cur_symbol.append(symbol.span()[0])
 
         cur_number_map = {}
@@ -20,19 +20,19 @@ def sum_adjacent(puzzle: str) -> int:
             ext_interval = CloseInterval(number.span()[0] - 1, number.span()[1])
             cur_number_map[ext_interval] = int(number.group())
 
-        adjacent_sum = pop_sum_of_interval_map(
-            cur_number_map, list(set(pre_symbol + cur_symbol))
-        ) + pop_sum_of_interval_map(pre_number_map, cur_symbol)
+        adjacent_sum = sum_of_interval_map(cur_number_map, list(set(pre_symbol + cur_symbol))) + sum_of_interval_map(
+            pre_number_map, cur_symbol
+        )
         result += adjacent_sum
 
         pre_number_map = cur_number_map
         pre_symbol = cur_symbol
-        print(f"{idx}: '{line}', ret: {result}, adj: {adjacent_sum}")
+        # print(f"{idx}: '{line}', ret: {result}, adj: {adjacent_sum}")
 
     return result
 
 
-def pop_sum_of_interval_map(number_map: dict[CloseInterval, int], symbol_place: list[int]) -> int:
+def sum_of_interval_map(number_map: dict[CloseInterval, int], symbol_place: list[int]) -> int:
     result = 0
     for symbol_place in symbol_place:
         for interval in list(number_map.keys()):
