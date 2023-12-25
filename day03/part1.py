@@ -10,7 +10,7 @@ def sum_adjacent(puzzle: str) -> int:
     pre_symbol = []  # the pre row symbol place like '...*......' -> [3]
     pre_number_map = {}  # pre row number adjacent range except added  '467..114..' -> {(-1, 3): 467, (4, 8): 114}
     result = 0
-    for idx, line in enumerate(puzzle.splitlines()):
+    for _, line in enumerate(puzzle.splitlines()):
         cur_symbol = []
         for symbol in re.finditer(r"[^a-zA-Z0-9\.]", line):
             cur_symbol.append(symbol.span()[0])
@@ -34,9 +34,9 @@ def sum_adjacent(puzzle: str) -> int:
 
 def sum_of_interval_map(number_map: dict[CloseInterval, int], symbol_place: list[int]) -> int:
     result = 0
-    for symbol_place in symbol_place:
+    for symbol in symbol_place:
         for interval in list(number_map.keys()):
-            if symbol_place in interval:
+            if symbol in interval:
                 result += number_map[interval]
     return result
 
